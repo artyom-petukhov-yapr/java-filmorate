@@ -33,7 +33,7 @@ class UserTest {
      * Валидация корректных данных о пользователе не приводит к выбросу исключения
      */
     @Test
-    void validate_validUser() {
+    void validateValidUser() {
         assertDoesNotThrow(() -> user.validate());
     }
 
@@ -41,7 +41,7 @@ class UserTest {
      * Электронная почта не может быть пустой
      */
     @Test
-    void validate_emptyEmail() {
+    void validateEmptyEmail() {
         user.setEmail("");
         assertThrows(ValidationException.class, () -> user.validate());
     }
@@ -50,7 +50,7 @@ class UserTest {
      * Электронная почта должна содержать символ @
      */
     @Test
-    void validate_incorrectEmail() {
+    void validateIncorrectEmail() {
         user.setEmail("user.email");
         assertThrows(ValidationException.class, () -> user.validate());
     }
@@ -59,7 +59,7 @@ class UserTest {
      * Логин не может быть пустым
      */
     @Test
-    void validate_emptyLogin() {
+    void validateEmptyLogin() {
         user.setLogin("");
         assertThrows(ValidationException.class, () -> user.validate());
     }
@@ -68,7 +68,7 @@ class UserTest {
      * Логин не может содержать пробелы
      */
     @Test
-    void validate_incorrectLogin() {
+    void validateIncorrectLogin() {
         user.setLogin("user login");
         assertThrows(ValidationException.class, () -> user.validate());
     }
@@ -77,7 +77,7 @@ class UserTest {
      * Дата рождения не может быть в будущем
      */
     @Test
-    void validate_birthday() {
+    void validateBirthday() {
         user.setBirthday(LocalDate.now().plusDays(1));
         assertThrows(ValidationException.class, () -> user.validate());
     }

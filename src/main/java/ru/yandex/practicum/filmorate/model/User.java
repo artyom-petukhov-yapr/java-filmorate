@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.model;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.Getter;
+import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 
@@ -15,29 +16,30 @@ import java.util.List;
  */
 @Slf4j
 @Data
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class User {
     /**
      * Идентификатор
      */
-    private int id;
+    int id;
     /**
      * Email
      */
-    private String email;
+    String email;
     /**
      * Логин
      */
-    private String login;
+    String login;
     /**
      * Имя
      * @Implementation: @Getter(AccessLevel.NONE) для отключения Lombok-генерации getName()
      */
     @Getter(AccessLevel.NONE)
-    private String name;
+    String name;
     /**
      * Дата рождения
      */
-    private LocalDate birthday;
+    LocalDate birthday;
 
     /**
      * @Implementation Согласно ТЗ: Если имя пользователя не указано, то в качестве имени используется логин

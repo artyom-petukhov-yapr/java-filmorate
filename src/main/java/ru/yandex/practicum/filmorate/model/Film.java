@@ -1,6 +1,8 @@
 package ru.yandex.practicum.filmorate.model;
 
+import lombok.AccessLevel;
 import lombok.Data;
+import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 
@@ -13,27 +15,28 @@ import java.util.List;
  */
 @Slf4j
 @Data
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class Film {
     /**
      * Идентификатор
      */
-    private int id;
+    int id;
     /**
      * Название
      */
-    private String name;
+    String name;
     /**
      * Описание
      */
-    private String description;
+    String description;
     /**
      * Дата выхода
      */
-    private LocalDate releaseDate;
+    LocalDate releaseDate;
     /**
      * Продолжительность
      */
-    private int duration;
+    int duration;
 
     /**
      * Валидация данных

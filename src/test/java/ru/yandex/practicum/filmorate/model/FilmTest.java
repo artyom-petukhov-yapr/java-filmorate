@@ -25,7 +25,7 @@ class FilmTest {
      * Валидация корректных данных о фильме не приводит к выбросу исключения
      */
     @Test
-    void validate_validFilm() {
+    void validateValidFilm() {
         assertDoesNotThrow(() -> film.validate());
     }
 
@@ -33,7 +33,7 @@ class FilmTest {
      * Пустое название фильма приводит к выбросу исключения
      */
     @Test
-    void validate_emptyName() {
+    void validateEmptyName() {
         film.setName("");
         assertThrows(ValidationException.class, () -> film.validate());
     }
@@ -42,7 +42,7 @@ class FilmTest {
      * Описание фильма не может быть больше 200 символов
      */
     @Test
-    void validate_longDescription() {
+    void validateLongDescription() {
         film.setDescription("A".repeat(201));
         assertThrows(ValidationException.class, () -> film.validate());
     }
@@ -51,7 +51,7 @@ class FilmTest {
      * Дата релиза фильма не может быть раньше 28 декабря 1895 года
      */
     @Test
-    void validate_releaseDate() {
+    void validateReleaseDate() {
         film.setReleaseDate(LocalDate.of(1895, 12, 27));
         assertThrows(ValidationException.class, () -> film.validate());
     }
@@ -60,7 +60,7 @@ class FilmTest {
      * Продолжительность фильма должна быть положительным числом
      */
     @Test
-    void validate_duration() {
+    void validateDuration() {
         film.setDuration(0);
         assertThrows(ValidationException.class, () -> film.validate());
     }
