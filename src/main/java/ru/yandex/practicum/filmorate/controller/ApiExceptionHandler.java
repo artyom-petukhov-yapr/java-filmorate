@@ -26,6 +26,13 @@ public class ApiExceptionHandler {
         return exceptionHandler(exception, HttpStatus.INTERNAL_SERVER_ERROR, "Внутренняя ошибка сервера");
     }
 
+    /**
+     * Обработка исключения
+     * 1. В тело ответа будет передано {@Link ErrorResponse} с {@Link ErrorResponse#description} заполненным
+     * сообщением об ошибке из исключения
+     * 2. Исключение будет залогировано
+     * @return {@Link ResponseEntity} с соответствующим статусом
+     */
     private ResponseEntity<ErrorResponse> exceptionHandler(Exception e, HttpStatus httpStatus, String error) {
         // централизованное логирование ошибки
         log.error(e.getMessage(), e);

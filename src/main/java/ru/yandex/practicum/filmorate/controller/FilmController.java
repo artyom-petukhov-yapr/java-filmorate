@@ -22,6 +22,8 @@ public class FilmController {
     private final FilmService filmService;
     private final UserStorage userStorage;
 
+    private final String likePath = "/{id}/like/{userId}";
+
     @GetMapping("/{id}")
     public Film getById(@PathVariable Integer id) {
         return filmStorage.getById(id);
@@ -51,14 +53,14 @@ public class FilmController {
         return filmStorage.getAll();
     }
 
-    @PutMapping("/{id}/like/{userId}")
+    @PutMapping(likePath)
     public void addLike(@PathVariable Integer id, @PathVariable Integer userId) {
         Film film = filmStorage.getById(id);
         User user = userStorage.getById(userId);
         filmService.addLike(film, user);
     }
 
-    @DeleteMapping("/{id}/like/{userId}")
+    @DeleteMapping(likePath)
     public void removeLike(@PathVariable Integer id, @PathVariable Integer userId) {
         Film film = filmStorage.getById(id);
         User user = userStorage.getById(userId);

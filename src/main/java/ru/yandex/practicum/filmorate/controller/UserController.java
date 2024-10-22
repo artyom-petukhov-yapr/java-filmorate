@@ -18,6 +18,8 @@ public class UserController {
     private final UserStorage userStorage;
     private final UserService userService;
 
+    private final String friendsPath = "/{id}/friends/{friendId}";
+
     @GetMapping("/{id}")
     public User getById(@PathVariable Integer id) {
         return userStorage.getById(id);
@@ -31,14 +33,14 @@ public class UserController {
         return userStorage.add(user);
     }
 
-    @PutMapping("/{id}/friends/{friendId}")
+    @PutMapping(friendsPath)
     public void addFriend(@PathVariable Integer id, @PathVariable Integer friendId) {
         User user = userStorage.getById(id);
         User friend = userStorage.getById(friendId);
         userService.addFriend(user, friend);
     }
 
-    @DeleteMapping("/{id}/friends/{friendId}")
+    @DeleteMapping(friendsPath)
     public void removeFriend(@PathVariable Integer id, @PathVariable Integer friendId) {
         User user = userStorage.getById(id);
         User friend = userStorage.getById(friendId);
