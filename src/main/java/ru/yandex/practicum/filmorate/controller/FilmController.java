@@ -1,34 +1,40 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.FilmService;
+import ru.yandex.practicum.filmorate.storage.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.UserStorage;
 
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.List;
 
 @Slf4j
 @RestController
 @RequestMapping("/films")
+@RequiredArgsConstructor
 public class FilmController {
+    private final FilmStorage filmStorage;
+    private final FilmService filmService;
+    private final UserStorage userStorage;
 
-    private final Map<Integer, Film> films = new HashMap<>();
-    private final AtomicInteger idCounter = new AtomicInteger(0);
+    private final String likePath = "/{id}/like/{userId}";
+
+    @GetMapping("/{id}")
+    public Film getById(@PathVariable Integer id) {
+        return filmStorage.getById(id);
+    }
 
     /**
      * Добавление фильма
      */
     @PostMapping
     public Film addFilm(@RequestBody Film film) {
-        film.validate();
-
-        int id = idCounter.incrementAndGet();
-        film.setId(id);
-        films.put(id, film);
-        return film;
+        return filmStorage.add(film);
     }
 
     /**
@@ -36,14 +42,7 @@ public class FilmController {
      */
     @PutMapping
     public Film updateFilm(@RequestBody Film film) {
-        if (films.containsKey(film.getId())) {
-            film.validate();
-            films.put(film.getId(), film);
-            return film;
-        }
-        String message = String.format("Фильм с id %d не найден", film.getId());
-        log.error(message);
-        throw new NotFoundException(message);
+        return filmStorage.update(film);
     }
 
     /**
@@ -51,6 +50,34 @@ public class FilmController {
      */
     @GetMapping
     public Collection<Film> getAllFilms() {
-        return films.values();
+        return filmStorage.getAll();
+    }
+
+    @PutMapping(likePath)
+    public void addLike(@PathVariable Integer id, @PathVariable Integer userId) {
+        Film film = filmStorage.getById(id);
+        User user = userStorage.getById(userId);
+        filmService.addLike(film, user);
+    }
+
+    @DeleteMapping(likePath)
+    public void removeLike(@PathVariable Integer id, @PathVariable Integer userId) {
+        Film film = filmStorage.getById(id);
+        User user = userStorage.getById(userId);
+        filmService.removeLike(film, user);
+    }
+
+    @GetMapping("/popular")
+    public List<Film> getPopularFilms(@RequestParam(required = false) Integer count) {
+        if (count == null) {
+            count = 10;
+        }
+        List<Integer> popularFilms = filmService.getPopularFilms(count);
+        log.debug("Получен список популярных фильмов ids: {}", popularFilms);
+        List<Film> res = new ArrayList<>();
+        for (Integer id : popularFilms) {
+            res.add(filmStorage.getById(id));
+        }
+        return res;
     }
 }
