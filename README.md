@@ -3,3 +3,5 @@
 
 ## Схема БД (plantuml)
 ![Схема БД](https://www.plantuml.com/plantuml/svg/jP91Zzem48Nl_XMkUY47LA3bWYWYRGsDe1IbKLKafCWY0rZOJkGu5HNgVzyu0PpDPfN32ZXvPhutUS-UffegdGcEtkaZ2C02DCqF4UoP11ouNvQaStQme0a-tyjht_lX-fjmGJQcQHkpdpxnvYlRGAL2be9oy0LXl5xWpvDd0YnojjhyVn7VSvVvp7WNyrYDtlUklqb__A4eJN9KKW5c-hVhV_tk-frXpsb21XM4nmSc3TDAVQnG82ZZLQRVow7_DqiY_ilWGPu6ms6hAGKSQ0fXH7NEVdC3qcOeoXJLB2wIy5O1cHE_2VbKHI3TAPQKL43-13N_8MUdUmXREJD1LD-0kVVGX65NvbDse5IfJTWTUyL0HkcH9M_PKQgykkG0Ki437sSjCRlEscb9fEQdK6YmavwOJAYY0dCcGVzB0CTA7sE4aCa8TxiNR6yDZ_0rELGKNxPlNs9fUn-MRkvU3pLr6q1LtXIQ1cu-qJHNoWH_0W00)
+
+Для редактирования схемы используется [онлайн редактор](https://www.plantuml.com/plantuml/uml). После перехода по ссылке вставить url из ссылки на схему БД и нажать "decode URL".
