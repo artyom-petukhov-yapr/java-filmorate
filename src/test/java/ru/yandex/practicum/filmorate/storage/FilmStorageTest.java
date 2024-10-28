@@ -1,43 +1,26 @@
-package ru.yandex.practicum.filmorate.controller;
+package ru.yandex.practicum.filmorate.storage;
 
-import org.junit.jupiter.api.BeforeEach;
+import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
+import ru.yandex.practicum.filmorate.dal.FilmDbStorage;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.service.FilmService;
-import ru.yandex.practicum.filmorate.storage.InMemoryFilmStorage;
-import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
 
 import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class FilmControllerTest {
-    FilmController filmController;
-
-    @BeforeEach
-    void setUp() {
-        filmController = new FilmController(new InMemoryFilmStorage(), new FilmService(), new InMemoryUserStorage());
-        Film film = createValidFilm();
-        filmController.addFilm(film);
-    }
-
-    /**
-     * Изначально должен быть один фильм
-     */
-    @Test
-    void getAllFilms() {
-        assertEquals(1, filmController.getAllFilms().size());
-    }
-
-    /**
-     * Изначально должен быть один фильм с идентификатором 1
-     */
-    @Test
-    void oneFilmHasIdOne() {
-        assertEquals(1, filmController.getAllFilms().iterator().next().getId());
-    }
+@SpringBootTest
+@AutoConfigureTestDatabase
+@RequiredArgsConstructor(onConstructor_ = @Autowired)
+@Import({FilmDbStorage.class})
+class FilmStorageTest {
+    private final FilmStorage filmStorage;
 
     /**
      * Добавление валидного фильма - исключения не должно быть
@@ -45,7 +28,7 @@ class FilmControllerTest {
     @Test
     void addValidFilm() {
         Film film = createValidFilm();
-        assertDoesNotThrow(() -> filmController.addFilm(film));
+        assertDoesNotThrow(() -> filmStorage.add(film));
     }
 
     /**
@@ -56,7 +39,7 @@ class FilmControllerTest {
         Film film = createValidFilm();
         // Продолжительность фильма должна быть положительным числом, поэтому должно быть исключение при добавлении
         film.setDuration(-1);
-        assertThrows(ValidationException.class, () -> filmController.addFilm(film));
+        assertThrows(ValidationException.class, () -> filmStorage.add(film));
     }
 
     /**
@@ -65,8 +48,8 @@ class FilmControllerTest {
     @Test
     void updateNotExistFilm() {
         Film film = createValidFilm();
-        film.setId(2);
-        assertThrows(NotFoundException.class, () -> filmController.updateFilm(film));
+        film.setId(10000000);
+        assertThrows(NotFoundException.class, () -> filmStorage.update(film));
     }
 
     /**
@@ -75,12 +58,12 @@ class FilmControllerTest {
     @Test
     void updateFilmName() {
         Film film = createValidFilm();
-        film.setId(1);
+        film = filmStorage.add(film);
 
         String newFilmName = film.getName() + " new";
         film.setName(newFilmName);
 
-        Film updatedFilm = filmController.updateFilm(film);
+        Film updatedFilm = filmStorage.update(film);
         assertEquals(newFilmName, updatedFilm.getName());
     }
 
@@ -88,12 +71,12 @@ class FilmControllerTest {
      * Обновление длительности фильма на некорректное значение - должно быть исключение
      */
     @Test
-    void updateFilmReleaseDate() {
+    void updateFilmDuration() {
         Film film = createValidFilm();
         film.setId(1);
         film.setDuration(-1);
 
-        assertThrows(ValidationException.class, () -> filmController.updateFilm(film));
+        assertThrows(ValidationException.class, () -> filmStorage.update(film));
     }
 
     /**

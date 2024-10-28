@@ -2,8 +2,11 @@ package ru.yandex.practicum.filmorate.storage;
 
 import ru.yandex.practicum.filmorate.model.User;
 
-import java.util.Collection;
+import java.util.List;
 
+/**
+ * Интерфейс для работы с хранилищем пользователей
+ */
 public interface UserStorage {
 
     /**
@@ -19,7 +22,7 @@ public interface UserStorage {
     /**
      * Все пользователи
      */
-    Collection<User> getAll();
+    List<User> getAll();
 
     /**
      * Пользователь по id

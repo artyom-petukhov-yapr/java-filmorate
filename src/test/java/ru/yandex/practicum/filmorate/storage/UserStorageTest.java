@@ -1,40 +1,25 @@
-package ru.yandex.practicum.filmorate.controller;
+package ru.yandex.practicum.filmorate.storage;
 
-import org.junit.jupiter.api.BeforeEach;
+import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
+import ru.yandex.practicum.filmorate.dal.FilmDbStorage;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.service.UserService;
-import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
 
 import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class UserControllerTest {
-    UserController userController;
-
-    @BeforeEach
-    void setUp() {
-        userController = new UserController(new InMemoryUserStorage(), new UserService());
-        userController.createUser(createValidUser());
-    }
-
-    /**
-     * Изначальное количество пользователей = 1
-     */
-    @Test
-    void getAllUsers() {
-        assertEquals(1, userController.getAllUsers().size());
-    }
-
-    /**
-     * Изначально должен быть один пользователь с идентификатором 1
-     */
-    @Test
-    void oneUserHasIdOne() {
-        assertEquals(1, userController.getAllUsers().iterator().next().getId());
-    }
+@SpringBootTest
+@AutoConfigureTestDatabase
+@RequiredArgsConstructor(onConstructor_ = @Autowired)
+@Import({FilmDbStorage.class})
+class UserStorageTest {
+    private final UserStorage userStorage;
 
     /**
      * Создание пользователя с пустым email - произойдет исключение
@@ -44,7 +29,7 @@ class UserControllerTest {
         User user = createValidUser();
         user.setEmail(null);
 
-        assertThrows(ValidationException.class, () -> userController.createUser(user));
+        assertThrows(ValidationException.class, () -> userStorage.add(user));
     }
 
     /**
@@ -55,40 +40,18 @@ class UserControllerTest {
         User user = createValidUser();
         user.setEmail("user.email");
 
-        assertThrows(ValidationException.class, () -> userController.createUser(user));
-    }
-
-    /**
-     * Создание пользователя с повторяющимся логином - произойдет исключение
-     */
-    @Test
-    void createDuplicateLogin() {
-        User user = createValidUser();
-        // чтобы не пересекся email с существующим пользователем
-        user.setEmail(user.getEmail() + "2");
-        assertThrows(ValidationException.class, () -> userController.createUser(user));
-    }
-
-    /**
-     * Создание пользователя с повторяющимся email - произойдет исключение
-     */
-    @Test
-    void createDuplicateEmail() {
-        User user = createValidUser();
-        // чтобы не пересекся логин с существующим пользователем
-        user.setLogin(user.getLogin() + "2");
-        assertThrows(ValidationException.class, () -> userController.createUser(user));
+        assertThrows(ValidationException.class, () -> userStorage.add(user));
     }
 
     /**
      * Создание пользователя с пустым логином - произойдет исключение
      */
     @Test
-    void testCreateUserWithEmptyLogin() {
+    void createEmptyLogin() {
         User user = createValidUser();
         user.setLogin(null);
 
-        assertThrows(ValidationException.class, () -> userController.createUser(user));
+        assertThrows(ValidationException.class, () -> userStorage.add(user));
     }
 
     /**
@@ -100,7 +63,7 @@ class UserControllerTest {
         // Логин не может содержать пробелы
         user.setLogin("test Login");
 
-        assertThrows(ValidationException.class, () -> userController.createUser(user));
+        assertThrows(ValidationException.class, () -> userStorage.add(user));
     }
 
     /**
@@ -111,7 +74,7 @@ class UserControllerTest {
         User user = createValidUser();
         user.setBirthday(LocalDate.now().plusDays(1));
 
-        assertThrows(ValidationException.class, () -> userController.createUser(user));
+        assertThrows(ValidationException.class, () -> userStorage.add(user));
     }
 
     /**
@@ -120,11 +83,12 @@ class UserControllerTest {
     @Test
     void updateUser() {
         User user = createValidUser();
-        user.setId(1);
+        userStorage.add(user);
+
         String newName = user.getName() + "new";
         user.setName(newName);
 
-        User updatedUser = userController.updateUser(user);
+        User updatedUser = userStorage.update(user);
 
         assertEquals(newName, updatedUser.getName());
     }
@@ -137,7 +101,7 @@ class UserControllerTest {
         User user = createValidUser();
         user.setId(1);
         user.setEmail(null);
-        assertThrows(ValidationException.class, () -> userController.updateUser(user));
+        assertThrows(ValidationException.class, () -> userStorage.update(user));
     }
 
     /**
@@ -148,7 +112,7 @@ class UserControllerTest {
         User user = createValidUser();
         user.setId(1);
         user.setEmail("user.email");
-        assertThrows(ValidationException.class, () -> userController.updateUser(user));
+        assertThrows(ValidationException.class, () -> userStorage.update(user));
     }
 
     /**
@@ -159,7 +123,7 @@ class UserControllerTest {
         User user = createValidUser();
         user.setId(1);
         user.setLogin(null);
-        assertThrows(ValidationException.class, () -> userController.updateUser(user));
+        assertThrows(ValidationException.class, () -> userStorage.update(user));
     }
 
     /**
@@ -171,7 +135,7 @@ class UserControllerTest {
         user.setId(1);
         // Логин не может содержать пробелы
         user.setLogin("user login");
-        assertThrows(ValidationException.class, () -> userController.updateUser(user));
+        assertThrows(ValidationException.class, () -> userStorage.update(user));
     }
 
     /**
@@ -184,7 +148,7 @@ class UserControllerTest {
 
         user.setBirthday(LocalDate.now().plusDays(1));
 
-        assertThrows(ValidationException.class, () -> userController.updateUser(user));
+        assertThrows(ValidationException.class, () -> userStorage.update(user));
     }
 
     /**
