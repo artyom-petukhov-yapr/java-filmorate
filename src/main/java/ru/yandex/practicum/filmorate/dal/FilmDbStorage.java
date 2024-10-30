@@ -28,20 +28,20 @@ public class FilmDbStorage implements FilmStorage {
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbc.update(connection -> {
-            PreparedStatement stmt = connection.prepareStatement(
+            PreparedStatement preparedStatement = connection.prepareStatement(
                     "INSERT INTO FILM (NAME, RELEASE_DATE, DURATION, DESCRIPTION, MPA_ID) VALUES (?, ?, ?, ?, ?)",
                     Statement.RETURN_GENERATED_KEYS
             );
-            stmt.setString(1, film.getName());
-            stmt.setDate(2, java.sql.Date.valueOf(film.getReleaseDate()));
-            stmt.setInt(3, film.getDuration());
-            stmt.setString(4, film.getDescription());
+            preparedStatement.setString(1, film.getName());
+            preparedStatement.setDate(2, java.sql.Date.valueOf(film.getReleaseDate()));
+            preparedStatement.setInt(3, film.getDuration());
+            preparedStatement.setString(4, film.getDescription());
             if (film.getMpa() != null && film.getMpa() > 0) {
-                stmt.setInt(5, film.getMpa());
+                preparedStatement.setInt(5, film.getMpa());
             } else {
-                stmt.setNull(5, java.sql.Types.INTEGER);
+                preparedStatement.setNull(5, java.sql.Types.INTEGER);
             }
-            return stmt;
+            return preparedStatement;
         }, keyHolder);
         film.setId((Integer) keyHolder.getKey());
         genreStorage.setFilmGenres(film.getId(), film.getGenres());

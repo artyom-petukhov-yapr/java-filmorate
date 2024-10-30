@@ -28,12 +28,12 @@ public class UserDbStorage implements UserStorage {
         String query = "INSERT INTO account (NAME, LOGIN, EMAIL, BIRTHDAY) VALUES (?, ?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbc.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
-            ps.setString(1, user.getName());
-            ps.setString(2, user.getLogin());
-            ps.setString(3, user.getEmail());
-            ps.setDate(4, java.sql.Date.valueOf(user.getBirthday()));
-            return ps;
+            PreparedStatement preparedStatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+            preparedStatement.setString(1, user.getName());
+            preparedStatement.setString(2, user.getLogin());
+            preparedStatement.setString(3, user.getEmail());
+            preparedStatement.setDate(4, java.sql.Date.valueOf(user.getBirthday()));
+            return preparedStatement;
         }, keyHolder);
         user.setId(keyHolder.getKey().intValue());
         return user;

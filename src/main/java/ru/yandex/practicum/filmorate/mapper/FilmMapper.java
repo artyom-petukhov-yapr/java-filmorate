@@ -17,34 +17,34 @@ public final class FilmMapper {
     private final GenreMapper genreMapper;
 
     public FilmDto mapToFilmDto(Film film) {
-        FilmDto dto = new FilmDto();
-        dto.setId(film.getId());
-        dto.setName(film.getName());
-        dto.setDescription(film.getDescription());
-        dto.setReleaseDate(film.getReleaseDate());
-        dto.setDuration(film.getDuration());
+        FilmDto result = new FilmDto();
+        result.setId(film.getId());
+        result.setName(film.getName());
+        result.setDescription(film.getDescription());
+        result.setReleaseDate(film.getReleaseDate());
+        result.setDuration(film.getDuration());
         if (film.getMpa() != null) {
-            dto.setMpa(mpaMapper.mpaToMpaDto(mpaStorage.getById(film.getMpa())));
+            result.setMpa(mpaMapper.mpaToMpaDto(mpaStorage.getById(film.getMpa())));
         }
         if (film.getGenres() != null) {
-            film.getGenres().forEach(genre -> dto.getGenres().add(genreMapper.genreToGenreDto(genreStorage.getById(genre))));
+            film.getGenres().forEach(genre -> result.getGenres().add(genreMapper.genreToGenreDto(genreStorage.getById(genre))));
         }
-        return dto;
+        return result;
     }
 
     public Film mapToFilm(FilmDto filmDto) {
-        Film film = new Film();
-        film.setId(filmDto.getId());
-        film.setName(filmDto.getName());
-        film.setDescription(filmDto.getDescription());
-        film.setReleaseDate(filmDto.getReleaseDate());
-        film.setDuration(filmDto.getDuration());
+        Film result = new Film();
+        result.setId(filmDto.getId());
+        result.setName(filmDto.getName());
+        result.setDescription(filmDto.getDescription());
+        result.setReleaseDate(filmDto.getReleaseDate());
+        result.setDuration(filmDto.getDuration());
         if (filmDto.getMpa() != null) {
-            film.setMpa(filmDto.getMpa().getId());
+            result.setMpa(filmDto.getMpa().getId());
         }
         if (filmDto.getGenres() != null) {
-            filmDto.getGenres().forEach(genre -> film.getGenres().add(genre.getId()));
+            filmDto.getGenres().forEach(genre -> result.getGenres().add(genre.getId()));
         }
-        return film;
+        return result;
     }
 }

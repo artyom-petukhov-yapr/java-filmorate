@@ -10,16 +10,16 @@ import ru.yandex.practicum.filmorate.model.Mpa;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MpaMapper {
     public MpaDto mpaToMpaDto(Mpa mpa) {
-        MpaDto dto = new MpaDto();
-        dto.setId(mpa.getId());
-        dto.setName(mpa.getName());
-        return dto;
+        MpaDto result = new MpaDto();
+        result.setId(mpa.getId());
+        result.setName(mpa.getName());
+        return result;
     }
 
     public Mpa mpaDtoToMpa(MpaDto mpaDto) {
-        Mpa mpa = new Mpa();
-        mpa.setId(mpaDto.getId());
-        mpa.setName(mpaDto.getName());
-        return mpa;
+        Mpa result = new Mpa();
+        result.setId(mpaDto.getId());
+        result.setName(mpaDto.getName());
+        return result;
     }
 }

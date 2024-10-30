@@ -19,9 +19,9 @@ public class MpaDbStorage implements MpaStorage {
 
     @Override
     public Mpa getById(int id) {
-        String sql = "SELECT * FROM MPA WHERE ID = ?";
+        String query = "SELECT * FROM MPA WHERE ID = ?";
         try {
-            return jdbc.queryForObject(sql, mapper, id);
+            return jdbc.queryForObject(query, mapper, id);
         } catch (EmptyResultDataAccessException e) {
             throw new NotFoundException(String.format("Рейтинг с id = %d не найден", id));
         }
@@ -29,7 +29,7 @@ public class MpaDbStorage implements MpaStorage {
 
     @Override
     public List<Mpa> getAll() {
-        String sql = "SELECT * FROM MPA";
-        return jdbc.query(sql, mapper);
+        String query = "SELECT * FROM MPA";
+        return jdbc.query(query, mapper);
     }
 }
