@@ -3,10 +3,15 @@ package ru.yandex.practicum.filmorate.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.dto.FilmDto;
+import ru.yandex.practicum.filmorate.mapper.FilmMapper;
+import ru.yandex.practicum.filmorate.mapper.GenreMapper;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.service.FilmService;
+import ru.yandex.practicum.filmorate.storage.FilmLikeStorage;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.GenreStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.util.ArrayList;
@@ -19,64 +24,85 @@ import java.util.List;
 @RequiredArgsConstructor
 public class FilmController {
     private final FilmStorage filmStorage;
-    private final FilmService filmService;
+    private final FilmMapper filmMapper;
+
+    private final FilmLikeStorage filmLikeStorage;
+
     private final UserStorage userStorage;
+
+    private final GenreStorage genreStorage;
+    private final GenreMapper genreMapper;
 
     private final String likePath = "/{id}/like/{userId}";
 
+    /**
+     * Получить фильм по идентификатору
+     */
     @GetMapping("/{id}")
-    public Film getById(@PathVariable Integer id) {
-        return filmStorage.getById(id);
+    public FilmDto getById(@PathVariable Integer id) {
+        FilmDto film = filmMapper.mapToFilmDto(filmStorage.getById(id));
+        List<Genre> genres = genreStorage.getFilmGenres(id);
+        film.getGenres().addAll(genres.stream().map(genreMapper::genreToGenreDto).toList());
+        return film;
     }
 
     /**
-     * Добавление фильма
+     * Добавить фильм
      */
     @PostMapping
-    public Film addFilm(@RequestBody Film film) {
-        return filmStorage.add(film);
+    public FilmDto addFilm(@RequestBody FilmDto film) {
+        return filmMapper.mapToFilmDto(filmStorage.add(filmMapper.mapToFilm(film)));
     }
 
     /**
-     * Обновление фильма
+     * Обновить данные о фильме
      */
     @PutMapping
-    public Film updateFilm(@RequestBody Film film) {
-        return filmStorage.update(film);
+    public FilmDto updateFilm(@RequestBody FilmDto film) {
+        return filmMapper.mapToFilmDto(filmStorage.update(filmMapper.mapToFilm(film)));
     }
 
     /**
-     * Список всех фильмов
+     * Получить список всех фильмов
      */
     @GetMapping
-    public Collection<Film> getAllFilms() {
-        return filmStorage.getAll();
+    public Collection<FilmDto> getAllFilms() {
+        return filmStorage.getAll().stream().map(filmMapper::mapToFilmDto).toList();
     }
 
+    /**
+     * Добавить лайк к фильму
+     */
     @PutMapping(likePath)
     public void addLike(@PathVariable Integer id, @PathVariable Integer userId) {
         Film film = filmStorage.getById(id);
         User user = userStorage.getById(userId);
-        filmService.addLike(film, user);
+        filmLikeStorage.addLike(film, user);
     }
 
+    /**
+     * Удалить лайк к фильму
+     */
     @DeleteMapping(likePath)
     public void removeLike(@PathVariable Integer id, @PathVariable Integer userId) {
         Film film = filmStorage.getById(id);
         User user = userStorage.getById(userId);
-        filmService.removeLike(film, user);
+        filmLikeStorage.removeLike(film, user);
     }
 
+    /**
+     * Получить список популярных фильмов
+     */
     @GetMapping("/popular")
-    public List<Film> getPopularFilms(@RequestParam(required = false) Integer count) {
+    public List<FilmDto> getPopularFilms(@RequestParam(required = false) Integer count) {
         if (count == null) {
             count = 10;
         }
-        List<Integer> popularFilms = filmService.getPopularFilms(count);
+        List<Film> popularFilms = filmLikeStorage.getPopularFilms(count);
         log.debug("Получен список популярных фильмов ids: {}", popularFilms);
-        List<Film> res = new ArrayList<>();
-        for (Integer id : popularFilms) {
-            res.add(filmStorage.getById(id));
+        List<FilmDto> res = new ArrayList<>();
+        for (Film film : popularFilms) {
+            res.add(filmMapper.mapToFilmDto(film));
         }
         return res;
     }

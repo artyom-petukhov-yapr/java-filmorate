@@ -1,6 +1,8 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -13,12 +15,22 @@ import ru.yandex.practicum.filmorate.exception.ValidationException;
 public class ApiExceptionHandler {
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<ErrorResponse> notFoundExceptionHandler(NotFoundException exception) {
-        return exceptionHandler(exception, HttpStatus.NOT_FOUND, "Ресурс не найден");
+        return exceptionHandler(exception, HttpStatus.NOT_FOUND, "Данные не найдены");
     }
 
     @ExceptionHandler(ValidationException.class)
     public ResponseEntity<ErrorResponse> validationException(ValidationException exception) {
         return exceptionHandler(exception, HttpStatus.BAD_REQUEST, "Некорректные данные");
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ErrorResponse> validationException(DataIntegrityViolationException exception) {
+        return exceptionHandler(exception, HttpStatus.BAD_REQUEST, "Некорректные данные о связанном объекте");
+    }
+
+    @ExceptionHandler(EmptyResultDataAccessException.class)
+    public ResponseEntity<ErrorResponse> validationException(EmptyResultDataAccessException exception) {
+        return exceptionHandler(exception, HttpStatus.BAD_REQUEST, "Данные не найдены");
     }
 
     @ExceptionHandler(RuntimeException.class)

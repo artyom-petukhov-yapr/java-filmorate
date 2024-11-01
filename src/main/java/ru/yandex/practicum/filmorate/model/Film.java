@@ -37,9 +37,19 @@ public class Film {
      * Продолжительность
      */
     int duration;
+    /**
+     * Рейтинг
+     */
+    Integer mpa = null;
+
+    /**
+     * Жанры
+     */
+    List<Integer> genres = new ArrayList<>();
 
     /**
      * Валидация данных
+     *
      * @throws ValidationException если данные некорректны
      */
     public void validate() {
